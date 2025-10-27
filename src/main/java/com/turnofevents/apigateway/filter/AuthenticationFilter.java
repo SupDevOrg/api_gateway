@@ -9,7 +9,6 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -20,7 +19,6 @@ import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class AuthenticationFilter implements GlobalFilter, Ordered {
@@ -34,8 +32,6 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private final List<String> openApiEndpoints = List.of(
             "/api/auth/login",
             "/api/auth/register",
-            "/api/auth/refresh",
-            "/api/auth/",
             "/actuator"
     );
 
@@ -43,20 +39,9 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
-        HttpMethod method = request.getMethod();
 
         // Пропускаем запросы к открытым эндпоинтам без проверки JWT
         if (isOpenEndpoint(path)) {
-            return chain.filter(exchange);
-        }
-
-        // Разрешаем все GET запросы к событиям без аутентификации (включая /api/events и /api/events/..)
-        if ((path.equals("/api/events") || path.startsWith("/api/events/")) && HttpMethod.GET.equals(method)) {
-            return chain.filter(exchange);
-        }
-
-        // Проверяем, требуется ли аутентификация для данного пути
-        if (!requiresAuthentication(path, method)) {
             return chain.filter(exchange);
         }
 
@@ -81,23 +66,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         // Токен валиден, добавляем информацию о пользователе в заголовки запроса
         String username = jwtUtil.getUsernameFromToken(token);
-        // Игнорируем роли, не добавляем X-Auth-Roles
         ServerHttpRequest modifiedRequest = request.mutate()
                 .header("X-Auth-User", username)
                 .build();
 
         return chain.filter(exchange.mutate().request(modifiedRequest).build());
-    }
-
-    // Проверяем, требуется ли аутентификация для этого пути и метода
-    private boolean requiresAuthentication(String path, HttpMethod method) {
-        // GET запросы к событиям не требуют аутентификации
-        if (path.startsWith("/api/events/") && HttpMethod.GET.equals(method)) {
-            return false;
-        }
-        
-        // Все остальные API запросы требуют аутентификации
-        return path.startsWith("/api/");
     }
 
     private boolean isOpenEndpoint(String path) {

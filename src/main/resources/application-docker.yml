@@ -4,19 +4,31 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: auth-service
-          uri: http://user-service:8080/
+        - id: user-service-auth
+          uri: http://user-service:8080
           predicates:
-            - Path=/api/auth/**
+            - Path=/api/auth/login
           filters:
-            - RewritePath=/api/auth/(?<segment>.*),/auth/${segment}
-
-        - id: event-service
-          uri: http://event-service:8080/
+            - RewritePath=/api/auth/login,/api/v1/user/login
+        
+        - id: user-service-register
+          uri: http://user-service:8080
           predicates:
-            - Path=/api/events/**
+            - Path=/api/auth/register
           filters:
-            - StripPrefix=0
+            - RewritePath=/api/auth/register,/api/v1/user/register
+        
+        - id: user-service-refresh
+          uri: http://user-service:8080
+          predicates:
+            - Path=/api/auth/refresh
+          filters:
+            - RewritePath=/api/auth/refresh,/api/v1/user/refresh
+        
+        - id: user-service-search
+          uri: http://user-service:8080
+          predicates:
+            - Path=/api/v1/user/**
 
   main:
     web-application-type: REACTIVE

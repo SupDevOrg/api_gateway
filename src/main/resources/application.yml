@@ -4,27 +4,31 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: event-service
-          uri: http://event-service:8080/
+        - id: user-service-auth
+          uri: http://localhost:8081
           predicates:
-            - Path=/api/events/**
+            - Path=/api/auth/login
           filters:
-            - StripPrefix=0
-            
-        # - id: review-service
-        #   uri: http://user_service-1:8080/
-        #   predicates:
-        #     - Path=/api/reviews/**
-        #   filters:
-        #     - RewritePath=/api/reviews/(?<segment>.*), /api/review/$\{segment}
-            
-        # Authorization through user-service
-        - id: auth-service
-          uri: http://user-service-service:8080
+            - RewritePath=/api/auth/login,/api/v1/user/login
+        
+        - id: user-service-register
+          uri: http://localhost:8081
           predicates:
-            - Path=/api/auth/**
+            - Path=/api/auth/register
           filters:
-            - RewritePath=/api/auth/(?<segment>.*),/auth/${segment}
+            - RewritePath=/api/auth/register,/api/v1/user/register
+        
+        - id: user-service-refresh
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/refresh
+          filters:
+            - RewritePath=/api/auth/refresh,/api/v1/user/refresh
+        
+        - id: user-service-search
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/v1/user/**
 
   main:
     web-application-type: REACTIVE
