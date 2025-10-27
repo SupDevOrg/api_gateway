@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: event-service
+          uri: http://event-service:8080/
+          predicates:
+            - Path=/api/events/**
+          filters:
+            - StripPrefix=0
+            
+        # - id: review-service
+        #   uri: http://user_service-1:8080/
+        #   predicates:
+        #     - Path=/api/reviews/**
+        #   filters:
+        #     - RewritePath=/api/reviews/(?<segment>.*), /api/review/$\{segment}
+            
+        # Authorization through user-service
+        - id: auth-service
+          uri: http://user-service-service:8080
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/auth/(?<segment>.*),/auth/${segment}
+
+  main:
+    web-application-type: REACTIVE
+
+# Настройки JWT
+jwt:
+  secret: ${JWT_SECRET:SecretKey}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: INFO
+    com.turnofevents.apigateway: DEBUG 
