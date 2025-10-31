@@ -14,9 +14,7 @@ API Gateway на основе Spring Cloud Gateway для проекта "Sup". 
 
 Gateway настроен на следующие маршруты:
 
-- `/api/user/**` → Сервис пользователей (User Service)
-- `/api/events/**` → Сервис событий (Event Service)
-- `/**` → Фронтенд
+- `/api/v1/user/**` → Сервис пользователей (User Service)
 
 ## Требования
 
