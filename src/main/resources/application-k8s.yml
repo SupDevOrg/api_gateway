@@ -1,38 +1,11 @@
 spring:
   application:
     name: api-gateway
+
   cloud:
     gateway:
       routes:
-        - id: user-service-auth
-          uri: http://user-service:8080
-          predicates:
-            - Path=/api/auth/login
-          filters:
-            - RewritePath=/api/auth/login,/api/v1/user/login
-
-        - id: user-service-register
-          uri: http://user-service:8080
-          predicates:
-            - Path=/api/auth/register
-          filters:
-            - RewritePath=/api/auth/register,/api/v1/user/register
-
-        - id: user-service-refresh
-          uri: http://user-service:8080
-          predicates:
-            - Path=/api/auth/refresh
-          filters:
-            - RewritePath=/api/auth/refresh,/api/v1/user/refresh
-
-        - id: user-service-update
-          uri: http://user-service:8080
-          predicates:
-            - Path=/api/auth/update
-          filters:
-            - RewritePath=/api/auth/update,/api/v1/user/update
-
-        - id: user-service-search
+        - id: user-service
           uri: http://user-service:8080
           predicates:
             - Path=/api/v1/user/**
@@ -42,11 +15,11 @@ spring:
 
 # JWT Settings
 jwt:
-  secret: ${JWT_SECRET}  # берем из существующего K8s Secret
+  secret: ${JWT_SECRET}  # берем из K8s Secret или env
 
 management:
   server:
-    port: ${MANAGEMENT_PORT:8081}  # подтягиваем из env или используем дефолт
+    port: ${MANAGEMENT_PORT:8081}  # подтягиваем из env или дефолт 8081
   endpoints:
     web:
       exposure:
