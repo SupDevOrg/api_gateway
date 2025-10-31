@@ -45,13 +45,15 @@ jwt:
   secret: ${JWT_SECRET:SecretKey}
 
 management:
+  server:
+    port: 8081  # отдельный порт для актуатора
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health,info
   endpoint:
     health:
-      show-details: ALWAYS
+      show-details: always  # показывать детали всегда, без авторизации
 
 logging:
   level:
