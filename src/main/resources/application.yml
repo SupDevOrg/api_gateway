@@ -24,6 +24,13 @@ spring:
             - Path=/api/auth/refresh
           filters:
             - RewritePath=/api/auth/refresh,/api/v1/user/refresh
+
+        - id: user-service-update
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/auth/update
+          filters:
+            - RewritePath=/api/auth/update,/api/v1/user/update
         
         - id: user-service-search
           uri: http://localhost:8081

@@ -30,8 +30,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private ObjectMapper objectMapper;
 
     private final List<String> openApiEndpoints = List.of(
-            "/api/auth/login",
-            "/api/auth/register",
+            "/api/v1/user/login",
+            "/api/v1/user/register",
             "/actuator"
     );
 
