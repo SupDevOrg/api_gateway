@@ -9,17 +9,21 @@ spring:
           uri: http://user-service:8080
           predicates:
             - Path=/api/v1/user/**
+        - id: message-service
+          uri: http://message-service:8080
+          predicates:
+            - Path=/api/v1/message/**
 
   main:
     web-application-type: REACTIVE
 
 # JWT Settings
 jwt:
-  secret: ${JWT_SECRET}  # берем из K8s Secret или env
+  secret: ${JWT_SECRET}
 
 management:
   server:
-    port: ${MANAGEMENT_PORT:8081}  # подтягиваем из env или дефолт 8081
+    port: ${MANAGEMENT_PORT:8081}
   endpoints:
     web:
       exposure:
