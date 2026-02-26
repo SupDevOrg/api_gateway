@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: http://${USER_SERVICE_HOST}:8080
+          predicates:
+            - Path=/api/v1/user/**
+        - id: message-service
+          uri: http://${MESSAGE_SERVICE_HOST}:8080
+          predicates:
+            - Path=/api/v1/message/**
+        - id: message-service-ws
+          uri: ws://${MESSAGE_SERVICE_HOST}:8080
+          predicates:
+            - Path=/api/v1/message/ws/**
+
+  main:
+    web-application-type: REACTIVE
+
+# JWT Settings
+jwt:
+  secret: ${JWT_SECRET:SecretKey}
+
+management:
+  server:
+    port: 8081  # отдельный порт для актуатора
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always  # показывать детали всегда, без авторизации
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: INFO
+    com.turnofevents.apigateway: DEBUG
