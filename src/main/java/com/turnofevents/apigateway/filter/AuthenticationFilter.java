@@ -66,8 +66,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         // Токен валиден, добавляем информацию о пользователе в заголовки запроса
         String username = jwtUtil.getUsernameFromToken(token);
+        Claims userclaims = jwtUtil.getAllClaimsFromToken(token);
+        Long userId = userClaims.get("userId", Long.class);
         ServerHttpRequest modifiedRequest = request.mutate()
                 .header("X-Auth-User", username)
+                .header("X-Auth-User-ID", userid.toString())
                 .build();
 
         return chain.filter(exchange.mutate().request(modifiedRequest).build());
