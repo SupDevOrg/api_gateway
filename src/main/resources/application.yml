@@ -12,11 +12,21 @@ spring:
           uri: http://message-service:8080
           predicates:
             - Path=/api/v1/message/**
-        
+
         - id: message-service-ws
           uri: ws://message-service:8080
           predicates:
             - Path=/api/v1/message/ws/**
+
+        - id: presences-service
+          uri: http://presences-service:3000
+          predicates:
+            - Path=/api/v1/presences/**
+
+        - id: presences-service-ws
+          uri: ws://presences-service:3000
+          predicates:
+            - Path=/api/v1/presences/ws/**
 
   main:
     web-application-type: REACTIVE

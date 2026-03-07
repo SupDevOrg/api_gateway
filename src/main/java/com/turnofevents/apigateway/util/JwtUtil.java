@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Component
 public class JwtUtil {
@@ -38,17 +36,6 @@ public class JwtUtil {
 
     public Date getExpirationDateFromToken(String token) {
         return getAllClaimsFromToken(token).getExpiration();
-    }
-    
-    @SuppressWarnings("unchecked")
-    public List<String> getRolesFromToken(String token) {
-        try {
-            Claims claims = getAllClaimsFromToken(token);
-            List<String> roles = claims.get("roles", List.class);
-            return roles != null ? roles : new ArrayList<>();
-        } catch (Exception e) {
-            return new ArrayList<>();
-        }
     }
 
     private Boolean isTokenExpired(String token) {
