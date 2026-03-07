@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.turnofevents.apigateway.util.ErrorResponse;
 import com.turnofevents.apigateway.util.JwtUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -67,10 +68,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         // Токен валиден, добавляем информацию о пользователе в заголовки запроса
         String username = jwtUtil.getUsernameFromToken(token);
         Claims userclaims = jwtUtil.getAllClaimsFromToken(token);
-        Long userId = userClaims.get("userId", Long.class);
+        Long userId = userclaims.get("userId", Long.class);
         ServerHttpRequest modifiedRequest = request.mutate()
                 .header("X-Auth-User", username)
-                .header("X-Auth-User-ID", userid.toString())
+                .header("X-Auth-User-ID", userId.toString())
                 .build();
 
         return chain.filter(exchange.mutate().request(modifiedRequest).build());
