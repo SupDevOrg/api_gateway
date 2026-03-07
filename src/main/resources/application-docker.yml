@@ -17,6 +17,11 @@ spring:
           predicates:
             - Path=/api/v1/message/ws/**
 
+        - id: message-service
+          uri: http://message-service:8080
+          predicates:
+            - Path=/api/v1/message/**
+
   main:
     web-application-type: REACTIVE
 
