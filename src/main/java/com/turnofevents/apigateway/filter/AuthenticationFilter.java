@@ -47,21 +47,21 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         // Проверяем наличие токена в заголовке Authorization
         if (!request.getHeaders().containsKey("Authorization")) {
-            return onError(exchange, "Отсутствует токен авторизации", HttpStatus.UNAUTHORIZED);
+            return onError(exchange, "Отсутствует токен авторизации");
         }
 
         String authHeader = request.getHeaders().getFirst("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return onError(exchange, "Некорректный формат токена", HttpStatus.UNAUTHORIZED);
+            return onError(exchange, "Некорректный формат токена");
         }
 
         String token = authHeader.substring(7);
         try {
             if (!jwtUtil.validateToken(token)) {
-                return onError(exchange, "Недействительный токен", HttpStatus.UNAUTHORIZED);
+                return onError(exchange, "Недействительный токен");
             }
         } catch (Exception e) {
-            return onError(exchange, "Ошибка валидации токена: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
+            return onError(exchange, "Ошибка валидации токена: " + e.getMessage());
         }
 
         // Токен валиден, добавляем информацию о пользователе в заголовки запроса
@@ -80,15 +80,15 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         return openApiEndpoints.stream().anyMatch(path::startsWith);
     }
 
-    private Mono<Void> onError(ServerWebExchange exchange, String message, HttpStatus httpStatus) {
+    private Mono<Void> onError(ServerWebExchange exchange, String message) {
         ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(httpStatus);
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         
         String path = exchange.getRequest().getURI().getPath();
         ErrorResponse errorResponse = ErrorResponse.of(
-                httpStatus.value(), 
-                httpStatus.getReasonPhrase(),
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
                 message,
                 path
         );
