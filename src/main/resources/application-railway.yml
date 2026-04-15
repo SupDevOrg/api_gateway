@@ -27,6 +27,16 @@ spring:
           uri: ws://${PRESENCES_SERVICE_HOST:presences-service}:3000
           predicates:
             - Path=/api/v1/presences/ws/**
+            
+        - id: notification-service
+          uri: http://${NOTIFICATION_SERVICE_HOST:notification-service}:8080
+          predicates:
+            - Path=/api/v1/notification/**
+
+        - id: notification-service-ws
+          uri: ws://${NOTIFICATION_SERVICE_HOST:notification-service}:8080
+          predicates:
+            - Path=/api/v1/notification/ws/**
 
   main:
     web-application-type: REACTIVE
